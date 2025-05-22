@@ -18,6 +18,7 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_KEY }}
+          port: ${{ secrets.VPS_PORT }}
           source: "docker-compose.yml"
           target: "~/temp-rabbitmq-deploy"
 
@@ -27,6 +28,7 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_KEY }}
+          port: ${{ secrets.VPS_PORT }}
           script: |
             cd ~/temp-rabbitmq-deploy
             export RABBIT_USER="${{ secrets.RABBIT_USER }}"
