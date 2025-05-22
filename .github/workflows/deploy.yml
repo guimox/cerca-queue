@@ -12,17 +12,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Copy docker-compose.yml to VPS (temporary folder)
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_KEY }}
-          port: ${{ secrets.VPS_PORT }}
-          source: "docker-compose.yml"
-          target: "~/temp-rabbitmq-deploy"
-
-      - name: Run deployment on VPS
+      - name: Deploy to VPS
         uses: appleboy/ssh-action@v0.1.6
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -30,10 +20,20 @@ jobs:
           key: ${{ secrets.VPS_KEY }}
           port: ${{ secrets.VPS_PORT }}
           script: |
-            cd ~/temp-rabbitmq-deploy
-            export RABBIT_USER="${{ secrets.RABBIT_USER }}"
-            export RABBIT_PASSWORD="${{ secrets.RABBIT_PASSWORD }}"
-            docker-compose down || true
+            mkdir -p ~/cerca-queue
+            cd ~/cerca-queue
+
+            if [ -d ".git" ]; then
+              git pull
+            else
+              git clone https://github.com/${{ github.repository }}.git .
+            fi
+
+            echo "RABBIT_USER=${{ secrets.RABBIT_USER }}" > .env
+            echo "RABBIT_PASSWORD=${{ secrets.RABBIT_PASSWORD }}" >> .env
+
+            docker-compose down
             docker-compose up -d
+
             cd ~
-            rm -rf ~/temp-rabbitmq-deploy
+            rm -rf $TEMP_DIR
