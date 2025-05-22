@@ -1,0 +1,37 @@
+name: Deploy RabbitMQ to VPS
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Copy docker-compose.yml to VPS (temporary folder)
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_KEY }}
+          source: "docker-compose.yml"
+          target: "~/temp-rabbitmq-deploy"
+
+      - name: Run deployment on VPS
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_KEY }}
+          script: |
+            cd ~/temp-rabbitmq-deploy
+            export RABBIT_USER="${{ secrets.RABBIT_USER }}"
+            export RABBIT_PASSWORD="${{ secrets.   }}"
+            docker-compose down || true
+            docker-compose up -d
+            cd ~
+            rm -rf ~/temp-rabbitmq-deploy
