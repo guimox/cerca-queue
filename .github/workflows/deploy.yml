@@ -30,7 +30,7 @@ jobs:
           script: |
             cd ~/temp-rabbitmq-deploy
             export RABBIT_USER="${{ secrets.RABBIT_USER }}"
-            export RABBIT_PASSWORD="${{ secrets.   }}"
+            export RABBIT_PASSWORD="${{ secrets.RABBIT_PASSWORD }}"
             docker-compose down || true
             docker-compose up -d
             cd ~
