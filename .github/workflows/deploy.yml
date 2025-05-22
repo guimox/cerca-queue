@@ -32,8 +32,8 @@ jobs:
             echo "RABBIT_USER=${{ secrets.RABBIT_USER }}" > .env
             echo "RABBIT_PASSWORD=${{ secrets.RABBIT_PASSWORD }}" >> .env
 
-            docker-compose down
-            docker-compose up -d
+            docker compose down
+            docker compose up -d
 
             cd ~
             rm -rf $TEMP_DIR
